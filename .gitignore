@@ -10,3 +10,6 @@
 
 # Env
 **/.env.example
+**/.env
+**/api/.env
+**/web/.env
