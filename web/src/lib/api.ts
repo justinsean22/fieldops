@@ -1,5 +1,11 @@
 import { API_BASE_URL } from "./config";
-import { Job, Agreement } from "../../../shared/types"; // Combined imports
+import {
+  Job,
+  Agreement,
+  Receipt,
+  PriceBookEntry,
+  PriceBookSummary,
+} from "../../../shared/types";
 import { ApiError } from "../../../shared/errors";
 
 async function request<T>(path: string, opts: RequestInit = {}): Promise<T> {
@@ -54,6 +60,11 @@ export const api = {
     });
   },
 
+  generateEvidencePdf: (jobId: string, agreementId: string) =>
+    request<Agreement>(`/jobs/${jobId}/agreements/${agreementId}/evidence`, {
+      method: "POST",
+    }),
+
   listInvoices: (jobId: string) => 
     request<any[]>(`/jobs/${jobId}/invoices`),
 
@@ -61,4 +72,31 @@ export const api = {
     request<any>(`/jobs/${jobId}/invoices/from-latest-agreement`, { 
       method: "POST" 
     }),
+
+  uploadReceipt: async (jobId: string, file: File): Promise<Receipt> => {
+    const url = `${API_BASE_URL}/jobs/${jobId}/receipts`;
+    const form = new FormData();
+    form.append("image", file, file.name);
+
+    const res = await fetch(url, { method: "POST", body: form });
+    const payload = await res.json().catch(() => undefined);
+    if (!res.ok) {
+      throw new ApiError(
+        (payload && (payload as any).detail) || `Request failed (${res.status})`,
+        res.status,
+        payload
+      );
+    }
+    return payload as Receipt;
+  },
+
+  listReceipts: (jobId: string) => request<Receipt[]>(`/jobs/${jobId}/receipts`),
+
+  importReceiptToPricebook: (jobId: string, receiptId: string) =>
+    request<PriceBookEntry[]>(`/pricebook/import/job/${jobId}/receipt/${receiptId}`, {
+      method: "POST",
+    }),
+
+  searchPricebook: (q: string) =>
+    request<PriceBookSummary[]>(`/pricebook/search?q=${encodeURIComponent(q)}`),
 };

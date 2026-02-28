@@ -26,12 +26,21 @@ class AgreementTerms(BaseModel):
     dueDate: Optional[str] = None
     paymentTerms: Optional[str] = None
 
+class ClientAck(BaseModel):
+    confirmed: bool
+    name: str
+    phone: Optional[str] = None
+    confirmedAt: Optional[str] = None
+
 class Agreement(BaseModel):
     agreementId: str
     createdAt: datetime
     audioUrl: Optional[str] = None  # local-dev URL path
     transcript: Optional[str] = None
     terms: Optional[AgreementTerms] = None
+    clientAck: Optional[ClientAck] = None
+    evidencePdfUrl: Optional[str] = None
+    evidenceHash: Optional[str] = None
 
 @router.get("", response_model=List[Agreement])
 def list_agreements(job_id: str):

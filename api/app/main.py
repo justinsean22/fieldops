@@ -9,6 +9,9 @@ from app.routes.health import router as health_router
 from app.routes.jobs import router as jobs_router
 from app.routes.agreements import router as agreements_router
 from app.routes.invoices import router as invoices_router
+from app.routes.receipts import router as receipts_router
+from app.routes.pricebook import router as pricebook_router
+from app.routes.evidence import router as evidence_router
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
@@ -32,3 +35,6 @@ app.include_router(health_router)
 app.include_router(jobs_router)
 app.include_router(agreements_router)
 app.include_router(invoices_router)
+app.include_router(receipts_router)
+app.include_router(pricebook_router)
+app.include_router(evidence_router)
